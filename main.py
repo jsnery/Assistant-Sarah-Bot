@@ -1,29 +1,40 @@
-# import speech_recognition as sr # Biblioteca de reconhecimento de fala Online
 from vosk import Model, KaldiRecognizer, SetLogLevel  # Biblioteca de reconhecimento de fala Offline
-from pyttsx3 import speak as bot_say # Leitor de texto
-from pathlib import Path
+from pyttsx3 import speak as bot_say2 # Leitor de texto
+from pyaudio import PyAudio, paInt16
+from playsound import playsound
+from gtts import gTTS, gTTSError
 from abc import ABC, abstractmethod
+from pathlib import Path
 from os import system
-from time import sleep
-from pydub import AudioSegment
-from pydub.playback import play
-import sqlite3, pyaudio
+import sqlite3
 
 system('cls')
 MEMORYDIR = Path(__file__).parent / 'data' / 'memory.db'
-MODELDIR = Path(__file__).parent / 'data' / 'full'
+MODELDIR = Path(__file__).parent / 'data' / 'full' # Baixar pelo Link: https://alphacephei.com/vosk/models/vosk-model-pt-fb-v0.1.1-pruned.zip
 MODELLITEDIR = Path(__file__).parent / 'data' / 'lite'
+TEMPTALK = Path(__file__).parent / 'data' / 'temp.mp3'
 SOUNDDIR = Path(__file__).parent / 'data' / 'sound.wav'
+
 
 class BotStructure(ABC):
 
     def __init__(self):
-        self._song = AudioSegment.from_wav(SOUNDDIR)
         self.status = True
 
     @property    
     @abstractmethod
     def user_speech(self) -> str:...
+
+
+    def bot_say(self, text, dir=TEMPTALK):
+        try:
+            speech_config = gTTS(text=text, lang='pt')
+            speech_config.save(dir)
+            playsound(dir)
+            dir.unlink()
+        except gTTSError:
+            bot_say2(text)
+        
 
     def brain(self, user_speech, DIR=MEMORYDIR):
 
@@ -35,33 +46,31 @@ class BotStructure(ABC):
                 if user_speech == user_say:
                     return say
         
-        bot_say('Não sei o que dizer, pode me ensinar?')
-        while True:
-            answer = self.user_speech
-            match answer:
-                case 'sim' | 'claro' | 'posso' | 'ok':
-                    bot_say('O que eu tenho que falar?')
-                    bot_speech = self.user_speech
-                    break
-                case 'não' | 'não posso' | 'não quero' | 'melhor não' | 'deixe pra lá':
-                    self.status = True
-                    return 'Ok, eu entendo...'
-                case 'Que burra' | 'ia burra' | 'idiota' | 'burra':
-                    self.status = True
-                    return 'Você é babaca!'
-                case _:
-                    bot_say('Não entendi, pode me ajudar?')
+        # self.bot_say('Não sei o que dizer, pode me ensinar?')
 
-        memory = sqlite3.connect(DIR)
-        cursor = memory.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS memory (user TEXT NOT NULL, answer TEXT NOT NULL)")
-        try:    
-            cursor.execute(f"INSERT INTO memory VALUES ('{user_speech}', '{bot_speech}')")
-        except sqlite3.NotSupportedError:
-            print('deu erro')
-        memory.commit()
-        self.status = True
-        return 'Obrigada por me ensinar"'
+        # while True:
+        #     answer = self.user_speech
+        #     match answer:
+        #         case 'sim' | 'claro' | 'posso' | 'ok':
+        #             self.bot_say('O que eu tenho que falar?')
+        #             bot_speech = self.user_speech
+        #             break
+        #         case 'não' | 'não posso' | 'não quero' | 'melhor não' | 'deixe pra lá':
+        #             self.status = True
+        #             return 'Ok, eu entendo...'
+        #         case 'que burra' | 'ia burra' | 'idiota' | 'burra' | 'sua idiota' | 'mas é burra viu':
+        #             self.status = True
+        #             return 'Você é muito babaca!'
+        #         case _:
+        #             self.bot_say('Não entendi, pode me ajudar?')
+
+        # memory = sqlite3.connect(DIR)
+        # cursor = memory.cursor()
+        # cursor.execute("CREATE TABLE IF NOT EXISTS memory (user TEXT NOT NULL, answer TEXT NOT NULL)")
+        # cursor.execute(f"INSERT INTO memory VALUES ('{user_speech}', '{bot_speech}')")
+        # memory.commit()
+        # self.status = True
+        # return 'Obrigada por me ensinar!"'
 
 
 class BotSara(BotStructure):
@@ -76,11 +85,11 @@ class BotSara(BotStructure):
             model = Model(f'{MODELLITEDIR}') # Carregar o Modelo de Idioma
 
         recognizer = KaldiRecognizer(model, 16000) # Reconhecedor de Voz
-        play(self._song)
+        playsound(SOUNDDIR)
 
         # Reconhecer Microfone
-        capture = pyaudio.PyAudio() # Capitura o Mic
-        stream = capture.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
+        capture = PyAudio() # Capitura o Mic
+        stream = capture.open(format=paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
         stream.start_stream() # Iniciar reconhecimento
         
         while True:
@@ -92,29 +101,33 @@ class BotSara(BotStructure):
                 if speech == '':
                     continue
 
-                elif speech == 'olá sara' and self.status:
+                elif speech == 'sara pode me ouvir' and self.status:
                     self.status = False
-                    bot_say('No que eu posso te ajudar?')
+                    self.bot_say('No que eu posso te ajudar?')
+                    print('Escutando...')
                     speech = self.user_speech
 
                     if speech == '':
                         continue
-
+                    
+                    system('cls')
                     return speech
                 
-                elif speech == 'depois nos falamos' and not self.status:
+                elif (speech == 'sara depois nos falamos' or speech == 'sara até mais') and not self.status:
                     self.status = True
-                    bot_say('Certo, até mais!')
+                    self.bot_say('Certo, até mais!')
                 elif not self.status:
                     return speech
 
     
 
-
-bot = BotSara()
-try:
-    while True:
-        bot_say(bot.brain(bot.user_speech))
-except KeyboardInterrupt:
-    print('Aplicação encerrada!')
+if __name__ == '__main__':
+    bot = BotSara()
+    try:
+        playsound(SOUNDDIR)
+        while True:
+            print('É só falar, "Olá Sara!"...')
+            bot.bot_say(bot.brain(bot.user_speech))
+    except KeyboardInterrupt:
+        print('Aplicação encerrada!')
 
