@@ -1,30 +1,62 @@
-import speech_recognition as sr # Biblioteca de reconhecimento de fala
-from vosk import Model, KaldiRecognizer
-# from gtts import gTTS, lang
-# from playsound import playsound
-import pyttsx3
+import speech_recognition as sr # Biblioteca de reconhecimento de fala Online
+from vosk import Model, KaldiRecognizer  # Biblioteca de reconhecimento de fala Offline
+from pyttsx3 import speak as hear # Leitor de texto
+import sqlite3
+from pathlib import Path
+from abc import ABC, abstractmethod
 import pyaudio
-import requests
 from os import system
 
-# def read_audio(text='Não endtendi!', lang='pt-br'):
-#     tts = gTTS(text=text, lang = lang, slow=False)
-#     filename = 'read_audio.mp3'
-#     tts.save(filename)
-#     playsound(filename)
+DIR = Path(__file__).parent / 'memory.db'
 
-def read_audio(text='Não endtendi!', lang='pt-br'):
-    pyttsx3.speak(text)
-    
-def check_online():
-    try:
-        requests.get('https://www.google.com')
-        return True
-    except requests.exceptions.ConnectionError:
-        return False
+class BotStructure(ABC):
 
-def speech(): # Reconhecedor de Fala Online | import speech_recognition as sr
-    def speech_vosk(): # Reconhecedor de Fala Online | from vosk import Model, KaldiRecognizer | import pyaudio
+    def __init__(self) -> None:
+        pass
+
+    @property    
+    @abstractmethod
+    def say(self) -> str:...
+
+    def brain(self, user_speech, DIR=DIR):
+
+        if DIR.exists():
+            memory = sqlite3.connect(DIR)
+            cursor = memory.cursor()
+            cursor.execute('SELECT * FROM memory')
+            for user_say, bot_say in cursor.fetchall():
+                if user_speech == user_say:
+                    return bot_say
+        while True:
+            hear('Não sei o que dizer, pode me ensinar?')
+            answer = self.say
+            match answer:
+                case 'sim' | 'claro' | 'posso' | 'ok':
+                    hear('O que eu tenho que falar?')
+                    bot_speech = self.say
+                    break
+                case 'não' | 'não posso' | 'não quero' | 'melhor não' | 'deixe pra lá':
+                    return 'Ok, eu entendo...'
+                case 'Que burra' | 'ia burra' | 'idiota':
+                    return 'Você é babaca!'
+                case _:
+                    hear('Não entendi, pode me ajudar?')
+
+        memory = sqlite3.connect(DIR)
+        cursor = memory.cursor()
+        cursor.execute("CREATE TABLE IF NOT EXISTS memory (user TEXT NOT NULL, answer TEXT NOT NULL)")
+        try:    
+            cursor.execute(f"INSERT INTO memory VALUES ('{user_speech}', '{bot_speech}')")
+        except sqlite3.NotSupportedError:
+            print('deu erro')
+        memory.commit()
+        return 'Obrigada por me ensinar"'
+
+
+class BotSara(BotStructure):
+
+    def __speech_vosk(self): # Reconhecedor de Fala Online | from vosk import Model, KaldiRecognizer | import pyaudio
+        
         model = Model('model') # Carregar o Modelo de Idioma
         system('cls')
         recognizer = KaldiRecognizer(model, 16000) # Reconhecedor de Voz
@@ -41,30 +73,33 @@ def speech(): # Reconhecedor de Fala Online | import speech_recognition as sr
                 speech = eval(recognizer.Result())['text']
                 if speech == '':
                     system('cls')
-                    print("Ouvindo...")
                     continue
                 return speech
+
+    @property
+    def say(self): # Reconhecedor de Fala Online | import speech_recognition as sr
         
-    recognition = sr.Recognizer() # Reconhecedor de Voz
-    microphone = sr.Microphone() # Microfone
-    with microphone as mic: # Abrir|Ativar Microfone
-        audio = recognition.listen(mic) # Capitando audio do Microfone
-        while True:
-            try:
-                talk = recognition.recognize_google(audio, language="pt-BR") # Retrono em str
-                break
-            except sr.UnknownValueError:
-                system('cls')
-                talk = speech_vosk()
-                break
-        system('cls')
-        return talk
+        recognition = sr.Recognizer() # Reconhecedor de Voz
+        microphone = sr.Microphone() # Microfone
+        with microphone as mic: # Abrir|Ativar Microfone
+            audio = recognition.listen(mic, timeout=1000) # Capitando audio do Microfone
+            while True:
+                try:
+                    talk = recognition.recognize_google(audio, language="pt-BR") # Retrono em str
+                    break
+                except sr.UnknownValueError:
+                    system('cls')
+                    talk = self.__speech_vosk()
+                    break
+            system('cls')
+            return talk
     
 
 
-
-
-print(speech())
-read_audio('Olá, meu nome é Sara!')
-
+bot = BotSara()
+try:
+    while True:
+        hear(bot.brain(bot.say))
+except KeyboardInterrupt:
+    print('Aplicação encerrada!')
 
