@@ -1,5 +1,5 @@
-import speech_recognition as sr # Biblioteca de reconhecimento de fala Online
-from vosk import Model, KaldiRecognizer  # Biblioteca de reconhecimento de fala Offline
+# import speech_recognition as sr # Biblioteca de reconhecimento de fala Online
+from vosk import Model, KaldiRecognizer, SetLogLevel  # Biblioteca de reconhecimento de fala Offline
 from pyttsx3 import speak as hear # Leitor de texto
 import sqlite3
 from pathlib import Path
@@ -11,8 +11,7 @@ DIR = Path(__file__).parent / 'memory.db'
 
 class BotStructure(ABC):
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self):...
 
     @property    
     @abstractmethod
@@ -55,8 +54,9 @@ class BotStructure(ABC):
 
 class BotSara(BotStructure):
 
-    def __speech_vosk(self): # Reconhecedor de Fala Online | from vosk import Model, KaldiRecognizer | import pyaudio
-        
+    @property
+    def say(self): # Reconhecimento de fala Offline | from vosk import Model, KaldiRecognizer | import pyaudio
+        SetLogLevel(-1)
         model = Model('model') # Carregar o Modelo de Idioma
         system('cls')
         recognizer = KaldiRecognizer(model, 16000) # Reconhecedor de Voz
@@ -67,7 +67,7 @@ class BotSara(BotStructure):
         stream.start_stream() # Iniciar reconhecimento
 
         while True:
-            data = stream.read(4096) # Lendo os dados do mic | buffer de 4mb
+            data = stream.read(16384) # Lendo os dados do mic | buffer de 16mb
 
             if recognizer.AcceptWaveform(data): # Se identificar a voz
                 speech = eval(recognizer.Result())['text']
@@ -76,23 +76,6 @@ class BotSara(BotStructure):
                     continue
                 return speech
 
-    @property
-    def say(self): # Reconhecedor de Fala Online | import speech_recognition as sr
-        
-        recognition = sr.Recognizer() # Reconhecedor de Voz
-        microphone = sr.Microphone() # Microfone
-        with microphone as mic: # Abrir|Ativar Microfone
-            audio = recognition.listen(mic, timeout=1000) # Capitando audio do Microfone
-            while True:
-                try:
-                    talk = recognition.recognize_google(audio, language="pt-BR") # Retrono em str
-                    break
-                except sr.UnknownValueError:
-                    system('cls')
-                    talk = self.__speech_vosk()
-                    break
-            system('cls')
-            return talk
     
 
 
