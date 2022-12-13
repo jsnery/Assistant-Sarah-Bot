@@ -2,6 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+Sara.exe
+Sara.vbs
+exec.bat
+data/bot.ico
 
 # C extensions
 *.so
