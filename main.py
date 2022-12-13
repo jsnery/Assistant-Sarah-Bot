@@ -11,7 +11,8 @@ import sqlite3, pyaudio
 
 system('cls')
 MEMORYDIR = Path(__file__).parent / 'data' / 'memory.db'
-MODELDIR = Path(__file__).parent / 'data' / 'model'
+MODELDIR = Path(__file__).parent / 'data' / 'full'
+MODELLITEDIR = Path(__file__).parent / 'data' / 'lite'
 SOUNDDIR = Path(__file__).parent / 'data' / 'sound.wav'
 
 class BotStructure(ABC):
@@ -68,7 +69,12 @@ class BotSara(BotStructure):
     @property
     def user_speech(self): # Reconhecimento de fala Offline | from vosk import Model, KaldiRecognizer | import pyaudio
         SetLogLevel(-1) # Desativar Log
-        model = Model(f'{MODELDIR}') # Carregar o Modelo de Idioma
+        
+        try:
+            model = Model(f'{MODELDIR}') # Carregar o Modelo de Idioma
+        except Exception:
+            model = Model(f'{MODELLITEDIR}') # Carregar o Modelo de Idioma
+
         recognizer = KaldiRecognizer(model, 16000) # Reconhecedor de Voz
         play(self._song)
 
