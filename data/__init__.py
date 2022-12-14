@@ -2,13 +2,15 @@ from vosk import Model, KaldiRecognizer, SetLogLevel  # Biblioteca de reconhecim
 from pyttsx3 import speak as bot_say2 # Leitor de texto
 from pyaudio import PyAudio, paInt16
 from gtts import gTTS # Leitor de texto do google
-from playsound import playsound, PlaysoundException
+from playsound import  PlaysoundException, playsound as playsound_
 from random import choice
 from abc import ABC, abstractmethod
 from pathlib import Path
 from os import system, path, mkdir
 from sys import exit
 from shutil import copy2
+import speech_recognition as sr
+import webbrowser 
 
 
 DATADIR = Path(__file__).parent  / 'data'
