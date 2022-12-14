@@ -2,11 +2,11 @@
 My learning project. Using speech recognize and text interpreter for audio. Translate language is portuguese. Programmed 100% in Python and using SQLite for as memory for bot!
 
 ### Used Libraries
-- **vosk** ```For voice recognize offline```
-- **speech recognition** ```For voice recognize online```
-- **pyaudio** ```For microphone detection and activation```
-- **pyttsx3** ```For bot speech conversion in audio offline```
-- **gtts** ```For bot speech conversion in audio online```
-- **playsound** ```For play audio generated in the gtts```
+- **Vosk** ```0.3.44```
+- **Speech Recognition** ```3.9.0```
+- **PyAudio** ```0.2.12```
+- **pyttsx3** ```2.90```
+- **gTTS** ```2.3.0```
+- **PlaySound** ```1.3.0```
 
 #### Python Version: ```3.11.1```
