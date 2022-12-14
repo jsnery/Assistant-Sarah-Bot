@@ -10,7 +10,7 @@ from os import system, path, mkdir
 from sys import exit
 from shutil import copy2
 import speech_recognition as sr
-import webbrowser 
+from webbrowser import open_new
 
 
 DATADIR = Path(__file__).parent  / 'data'
