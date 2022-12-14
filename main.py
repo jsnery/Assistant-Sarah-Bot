@@ -9,8 +9,8 @@ class Brain(ABC):
         self._farewell = ('Certo, até mais!', 'Até depois então', 'Falo com você mais tarde!', 'Estarei aqui!')
         self._salutation = ('No que eu posso te ajudar?', 'Precisando de mim?', 'Chamou chamou', 'Estou aqui!')
         self._commands = {
-            'abrir google': lambda: webbrowser.open_new('https://www.google.com/'),
-            'abrir youtube': lambda: webbrowser.open_new('https://www.youtube.com/'),
+            'abrir google': lambda: open_new('https://www.google.com/'),
+            'abrir youtube': lambda: open_new('https://www.youtube.com/'),
         }
 
     @property
