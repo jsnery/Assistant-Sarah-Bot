@@ -53,6 +53,7 @@ class Voice:
         try:
             model = Model(f'{FULLLANGUAGE}') # Carregar o Modelo de Idioma
         except Exception:
+            system('cls')
             model = Model(f'{LIGHTLANGUAGE}') # Carregar o Modelo de Idioma
 
         recognizer = KaldiRecognizer(model, 16000) # Reconhecedor de Voz
@@ -80,7 +81,7 @@ class Voice:
                             self.status = True 
                         continue
 
-                    case 'E aí sarah' if self.status:
+                    case 'sarah' if self.status:
                         self.status = False
                         self.bot_say(choice(self._salutation))
                         speech = self.voice_detection
