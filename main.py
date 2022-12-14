@@ -11,6 +11,7 @@ class Brain(ABC):
         self._commands = {
             'abrir google': lambda: open_new('https://www.google.com/'),
             'abrir youtube': lambda: open_new('https://www.youtube.com/'),
+            'abrir documentação': lambda: open_new('https://docs.python.org/pt-br/3/'),
         }
 
     @property
