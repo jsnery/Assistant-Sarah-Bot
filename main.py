@@ -101,7 +101,7 @@ class BotSara(Brain):
                             self.status = True 
                         continue
 
-                    case 'sarah' if self.status:
+                    case 'sarah' | 'sara' if self.status:
                         self.status = False
                         self.bot_say(choice(self._salutation))
                         speech = self.voice_detection
