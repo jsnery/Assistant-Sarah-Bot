@@ -152,6 +152,7 @@ class BotSara(Brain):
 
                     case _ if not self.status:
                         return speech
+            
             except UnboundLocalError:
                 continue
         
