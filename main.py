@@ -2,13 +2,31 @@ import sqlite3
 from data import *
 
 
-class Brain:
+class Brain(ABC):
 
     def __init__(self):
         self.status = True
         self._farewell = ('Certo, até mais!', 'Até depois então', 'Falo com você mais tarde!', 'Estarei aqui!')
         self._salutation = ('No que eu posso te ajudar?', 'Precisando de mim?', 'Chamou chamou', 'Estou aqui!')
-        
+    
+    @property
+    @abstractmethod
+    def voice_detection(self): ...
+
+    def bot_say(self, text, dir=BOTVOICE):
+        try:
+            speech_config = gTTS(text=text, lang='pt')
+            speech_config.save(dir)
+            try:
+                playsound(dir)
+            except PlaysoundException: # Corrigi o bug de execução de som
+                system('cls')
+                playsound(dir)
+            dir.unlink()
+        except Exception:
+            system('cls')
+            bot_say2(text)
+
     def __learnig(self):
         self.bot_say('Me fale algo o que vou ouvir.')
         while True:
@@ -45,8 +63,9 @@ class Brain:
             
         return 'Não aprendi isso ainda, se quiser me ensinar fale: Aprenda Isso!'
 
-class Voice:
+class BotSara(Brain):
 
+    @property
     def voice_detection(self): # Reconhecimento de fala Offline | from vosk import Model, KaldiRecognizer | import pyaudio
         SetLogLevel(-1) # Desativar Log
         
@@ -60,6 +79,7 @@ class Voice:
         try:
             playsound(WARNINGSOUND)
         except PlaysoundException: # Corrigi o bug de execução de som
+            system('cls')
             playsound(WARNINGSOUND)
 
         # Reconhecer Microfone
@@ -102,22 +122,9 @@ class Voice:
 
                     case _ if not self.status:
                         return speech
-
-    def bot_say(self, text, dir=BOTVOICE):
-        try:
-            speech_config = gTTS(text=text, lang='pt')
-            speech_config.save(dir)
-            playsound(f'{dir}')
-            dir.unlink()
-        except PlaysoundException:
-            system('cls')
-            bot_say2(text)
         
-class BotSara(Brain, Voice):
-    ...
-
 
 if __name__ == '__main__':
     bot = BotSara()
     while True:
-        bot.bot_say(bot.discourse(bot.voice_detection()))
+        bot.bot_say(bot.discourse(bot.voice_detection))
