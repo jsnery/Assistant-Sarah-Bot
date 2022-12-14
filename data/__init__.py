@@ -19,13 +19,15 @@ if (Path().absolute() / 'data') != DATADIR:
 MEMORYDIR = Path(DATADIR) / 'memory.db'
 FULLLANGUAGE = Path(DATADIR)  / 'full' # Baixar pelo Link: https://alphacephei.com/vosk/models/vosk-model-pt-fb-v0.1.1-pruned.zip
 LIGHTLANGUAGE = Path(DATADIR)  / 'lite'
-WARNING = Path(DATADIR) / 'sound.wav'
-CACHEDIR = path.join(path.expanduser("~"), "AppData/Roaming/SaraCache")
+WARNINGSOUND = Path(DATADIR) / 'sound.wav'
+BOTVOICE = Path(DATADIR) / 'temp.mp3'
 
-if not path.isdir(CACHEDIR):
-    mkdir(CACHEDIR)
+# CACHEDIR = path.join(path.expanduser("~"), "AppData/Roaming/SaraCache")
 
-copy2(WARNING, CACHEDIR)
+# if not path.isdir(CACHEDIR):
+#     mkdir(CACHEDIR)
 
-WARNINGSOUND = Path(CACHEDIR) / 'sound.wav'
-BOTVOICE = Path(CACHEDIR) / 'temp.mp3'
+# copy2(WARNING, CACHEDIR)
+
+# WARNINGSOUND = Path(CACHEDIR) / 'sound.wav'
+# BOTVOICE = Path(CACHEDIR) / 'temp.mp3'
