@@ -7,3 +7,5 @@ My learning project. Using speech recognize and text interpreter for audio. Tran
 - **pyttsx3** ```For bot speech conversion in audio offline```
 - **gtts** ```For bot speech conversion in audio online```
 - **playsound** ```For play audio generated in the gtts```
+
+#### Python Version: ```3.11.1```
