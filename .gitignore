@@ -6,6 +6,7 @@ Sara.exe
 Sara.vbs
 exec.bat
 data/bot.ico
+data/temp.mp3
 
 # C extensions
 *.so
