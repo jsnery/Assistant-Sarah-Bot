@@ -3,7 +3,8 @@ from vosk import Model, KaldiRecognizer, SetLogLevel  # Biblioteca de reconhecim
 from pyttsx3 import speak as bot_say2 # Leitor de texto
 from pyaudio import PyAudio, paInt16
 from abc import ABC, abstractmethod
-from os import system, path, mkdir
+from os import system, path, mkdir, startfile
+from subprocess import run
 from webbrowser import open_new
 from random import choice
 from pathlib import Path
@@ -11,6 +12,7 @@ from shutil import copy2
 from gtts import gTTS # Leitor de texto do google
 from sys import exit
 import speech_recognition as sr
+from googlesearch import search
 
 
 DATADIR = Path(__file__).parent  / 'data'
