@@ -2,6 +2,8 @@ import sqlite3
 from data import *
 
 
+
+
 class Brain(ABC):
 
     def __init__(self):
@@ -12,6 +14,8 @@ class Brain(ABC):
             'abrir google': lambda: open_new('https://www.google.com/'),
             'abrir youtube': lambda: open_new('https://www.youtube.com/'),
             'abrir documentação': lambda: open_new('https://docs.python.org/pt-br/3/'),
+            'abrir chrome': lambda: startfile('C:\Program Files\Google\Chrome\Application\chrome.exe'),
+            'abrir vs code': lambda: startfile('C:\VSCode\Code.exe')
         }
 
     @property
@@ -20,19 +24,19 @@ class Brain(ABC):
 
     def bot_say(self, text, dir_=BOTVOICE):
         try:
-            speech_config = gTTS(text=text, lang='pt')
-            speech_config.save(dir_)
-            try:
+            gTTS(text=text, lang='pt').save(dir_)
+            try: # Corrigi o bug de execução de som
                 playsound_(dir_)
-            except PlaysoundException: # Corrigi o bug de execução de som
+            except PlaysoundException:
                 system('cls')
                 playsound_(dir_)
             dir_.unlink()
+
         except Exception:
             system('cls')
             bot_say2(text)
 
-    def __learnig(self):
+    def __learnig(self, DIR_=MEMORYDIR):
         self.bot_say('Me fale algo o que vou ouvir.')
         while True:
             asking = self.voice_detection
@@ -47,16 +51,14 @@ class Brain(ABC):
                     continue
             break
 
-        memory = sqlite3.connect(MEMORYDIR)
+        memory = sqlite3.connect(DIR_)
         cursor = memory.cursor()
         try:
             cursor.execute(f"INSERT INTO memory VALUES ('{asking}', '{answer}', '{answer}', '{answer}', '{answer}')")
             memory.commit()
-            self.status = True
-            return 'Conhecimento obtido com sucesso'
+            return 'Consegui aprender isso! Obrigada.'
         except sqlite3.OperationalError:
-            self.status = True
-            return 'Acho que já conheço isso! Se quiser me ensinar outra coisa fale "Aprenda Isso"'
+            return 'Já possuo essa informação em minha memória!'
 
     def discourse(self, user_speech, DIR_=MEMORYDIR):
         memory = sqlite3.connect(DIR_)
@@ -70,6 +72,16 @@ class Brain(ABC):
             if user_speech in list(self._commands.keys()):
                 self._commands.get(user_speech)()
                 return 'Abrindo...'
+
+            if 'pesquisar no google' in user_speech:
+                search_ = "+".join(user_speech.split()[3:])
+                open_new(f'https://www.google.com/search?q={search_}')
+                return 'Abrindo...'
+            
+            if 'pesquisar' in user_speech:
+                search_ = " ".join(user_speech.split()[1:])
+                open_new(*[i for i in search(search_, stop=1, lang='br')])
+                return 'Abrindo...'
             
             if user_speech == user_say:
                 return choice(bot_say)
@@ -82,48 +94,46 @@ class BotSara(Brain):
     @property
     def voice_detection(self): # Reconhecimento de fala Offline | from vosk import Model, KaldiRecognizer | import pyaudio
         
-        # speech_recognition
+        # Speech Recognition
         srrecognizer = sr.Recognizer() 
         mic = sr.Microphone()
 
         # vosk   
+        SetLogLevel(-1)
         try:
-            SetLogLevel(-1)
             model = Model(f'{FULLLANGUAGE}') # Carregar o Modelo de Idioma Cheio
         except Exception:
             system('cls')
-            SetLogLevel(-1)
             model = Model(f'{LIGHTLANGUAGE}') # Carregar o Modelo de Idioma Leve
 
         recognizer = KaldiRecognizer(model, 16000) # Reconhecedor de Voz
 
-        try:
+        try: # Corrigi o bug de execução de som
             playsound_(WARNINGSOUND)
-        except PlaysoundException: # Corrigi o bug de execução de som
+        except PlaysoundException:
             system('cls')
             playsound_(WARNINGSOUND)
+        except Exception:
+            ...
         
         timeout = 3
         while True:
             system('cls')
-            try: # speech_recognition
+            try: # Speech Recognition
                 with mic as source:
                     audio = srrecognizer.listen(source)
                     speech = srrecognizer.recognize_google(audio, language='pt-BR').lower()
                     system('cls')
-
-            except (sr.UnknownValueError, sr.RequestError): # vosk
-                system('cls')
-                # Reconhecer Microfone
-                capture = PyAudio() # Capitura o Mic
+            except (sr.UnknownValueError, sr.RequestError): # Vosk
+                capture = PyAudio() # Capiturando o Mic
                 stream = capture.open(format=paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192) # Configurando Captura
                 stream.start_stream() # Iniciar reconhecimento
-
                 data = stream.read(16384) # Lendo os dados do mic | buffer de 16mb
 
                 if recognizer.AcceptWaveform(data): # Se identificar a voz
                     speech = eval(recognizer.Result())['text']
-
+            
+            system('cls')
             try:
                 match speech:
                     case '' if timeout > 0:
@@ -153,13 +163,13 @@ class BotSara(Brain):
 
                     case _ if not self.status:
                         return speech
-            
+                    
             except UnboundLocalError:
                 continue
         
 
 if __name__ == '__main__':
     bot = BotSara()
-    bot.bot_say(' ') # Corrigi a leitura de voz | Armengo temporario
+    bot.bot_say(' ')
     while True:
         bot.bot_say(bot.discourse(bot.voice_detection))
