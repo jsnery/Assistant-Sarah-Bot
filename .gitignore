@@ -7,7 +7,7 @@ Sara.vbs
 exec.bat
 data/bot.ico
 data/temp.mp3
-
+.google-cookie
 # C extensions
 *.so
 .vscode
