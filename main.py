@@ -158,7 +158,6 @@ class BotSara(Brain):
                 continue
         
 
-
 if __name__ == '__main__':
     bot = BotSara()
     bot.bot_say(' ') # Corrigi a leitura de voz | Armengo temporario
