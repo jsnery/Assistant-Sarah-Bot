@@ -11,9 +11,6 @@ class Brain(ABC):
         self._farewell = ('Certo, até mais!', 'Até depois então', 'Falo com você mais tarde!', 'Estarei aqui!')
         self._salutation = ('No que eu posso te ajudar?', 'Precisando de mim?', 'Chamou chamou', 'Estou aqui!')
         self._commands = {
-            'abrir google': lambda: open_new('https://www.google.com/'),
-            'abrir youtube': lambda: open_new('https://www.youtube.com/'),
-            'abrir documentação': lambda: open_new('https://docs.python.org/pt-br/3/'),
             'abrir chrome': lambda: startfile('C:\Program Files\Google\Chrome\Application\chrome.exe'),
             'abrir vs code': lambda: startfile('C:\VSCode\Code.exe')
         }
@@ -73,15 +70,15 @@ class Brain(ABC):
                 self._commands.get(user_speech)()
                 return 'Abrindo...'
 
-            if 'pesquisar no google' in user_speech:
-                search_ = "+".join(user_speech.split()[3:])
-                open_new(f'https://www.google.com/search?q={search_}')
+            if 'abrir' in user_speech:
+                search_ = "+".join(user_speech.split()[1:])
+                open_new(*[i for i in search(search_, stop=1, lang='br')])
                 return 'Abrindo...'
             
             if 'pesquisar' in user_speech:
-                search_ = " ".join(user_speech.split()[1:])
-                open_new(*[i for i in search(search_, stop=1, lang='br')])
-                return 'Abrindo...'
+                search_ = "+".join(user_speech.split()[1:])
+                open_new(f'https://www.google.com/search?q={search_}')
+                return 'Pesquisando...'
             
             if user_speech == user_say:
                 return choice(bot_say)
