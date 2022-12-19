@@ -8,6 +8,7 @@ My learning project. Using speech recognize and text interpreter for audio. Tran
 - **pyttsx3** ```2.90```
 - **gTTS** ```2.3.0```
 - **PlaySound** ```1.3.0```
+- **google** ```3.0.0```
 
 #### Python Version: ```3.11.1```
 
