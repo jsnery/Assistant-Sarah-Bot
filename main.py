@@ -2,18 +2,12 @@ import sqlite3
 from data import *
 
 
-
-
 class Brain(ABC):
 
     def __init__(self):
         self.status = True
         self._farewell = ('Certo, até mais!', 'Até depois então', 'Falo com você mais tarde!', 'Estarei aqui!')
         self._salutation = ('No que eu posso te ajudar?', 'Precisando de mim?', 'Chamou chamou', 'Estou aqui!')
-        self._commands = {
-            'abrir chrome': lambda: startfile('C:\Program Files\Google\Chrome\Application\chrome.exe'),
-            'abrir vs code': lambda: startfile('C:\VSCode\Code.exe')
-        }
 
     @property
     @abstractmethod
@@ -65,10 +59,6 @@ class Brain(ABC):
         for user_say, *bot_say in cursor.fetchall():
             if user_speech == 'aprenda isso':
                 return self.__learnig()
-            
-            if user_speech in list(self._commands.keys()):
-                self._commands.get(user_speech)()
-                return 'Abrindo...'
 
             if 'abrir' in user_speech:
                 search_ = "+".join(user_speech.split()[1:])
