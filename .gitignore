@@ -5,13 +5,13 @@ __pycache__/
 Sara.exe
 Sara.vbs
 exec.bat
-data/bot.ico
-data/temp.mp3
+data_/bot.ico
+data_/temp.mp3
 .google-cookie
 # C extensions
 *.so
 .vscode
-data/full
+data_/full
 # Distribution / packaging
 .Python
 build/
