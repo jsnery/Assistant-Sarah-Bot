@@ -14,6 +14,7 @@ class Brain(ABC):
 
     _farewell = json_data['farewell']
     _salutation = json_data['salutation']
+    status = True
     @property
     @abstractmethod
     def voice_detection(self): ...
