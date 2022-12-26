@@ -1,26 +1,19 @@
 import sqlite3
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from json import 
+import json
 import data_
+
+
+with open(data_.JSONDATA, 'r') as jsonFile:
+    json_data = json.load(jsonFile)
 
 
 @dataclass
 class Brain(ABC):
 
-    _farewell = (
-                'Certo, até mais!',
-                'Até depois então',
-                'Falo com você mais tarde!',
-                'Estarei aqui!'
-                )
-    _salutation = (
-                'No que eu posso te ajudar?',
-                'Precisando de mim?',
-                'Chamou chamou',
-                'Estou aqui!'
-                )
-
+    _farewell = json_data['farewell']
+    _salutation = json_data['salutation']
     @property
     @abstractmethod
     def voice_detection(self): ...
