@@ -20,6 +20,7 @@ DATADIR = Path(__file__).parent  / 'data_'  # noqa
 if (Path().absolute() / 'data_') != DATADIR:
     DATADIR = Path(__file__).parent
 
+JSONDATA = Path(DATADIR) / 'memory.json'
 MEMORYDIR = Path(DATADIR) / 'memory.db'
 FULLLANGUAGE = Path(DATADIR) / 'full'
 # Link: https://alphacephei.com/vosk/models/vosk-model-pt-fb-v0.1.1-pruned.zip
