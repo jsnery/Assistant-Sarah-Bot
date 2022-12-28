@@ -1,18 +1,18 @@
-from playsound import  PlaysoundException, playsound as playsound_  # noqa
-from vosk import Model, KaldiRecognizer, SetLogLevel  # noqa
+from playsound import  PlaysoundException, playsound as playsound_  # type: ignore # noqa
+from vosk import Model, KaldiRecognizer, SetLogLevel  # type: ignore # noqa
 # Biblioteca de reconhecimento de fala Offline
-from pyttsx3 import speak as bot_say2 # Leitor de texto  # noqa
-from pyaudio import PyAudio, paInt16  # noqa
+from pyttsx3 import speak as bot_say2 # type: ignore # Leitor de texto  # noqa
+from pyaudio import PyAudio, paInt16  # type: ignore # noqa
 from os import system, path, mkdir, startfile  # noqa
 from subprocess import run  # noqa
 from webbrowser import open_new  # noqa
 from random import choice  # noqa
 from pathlib import Path  # noqa
 from shutil import copy2  # noqa
-from gtts import gTTS # Leitor de texto do google  # noqa
+from gtts import gTTS # type: ignore # Leitor de texto do google  # noqa
 from sys import exit  # noqa
-import speech_recognition as sr  # noqa
-from googlesearch import search  # noqa
+import speech_recognition as sr  # type: ignore # noqa
+from googlesearch import search  # type: ignore # noqa
 
 
 DATADIR = Path(__file__).parent  / 'data_'  # noqa
